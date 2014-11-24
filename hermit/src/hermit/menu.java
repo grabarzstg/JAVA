@@ -131,7 +131,8 @@ public class menu {
 			for (int i=0; i<100; i++)
 			{
 				outTab[i+1] = initTab[i];			
-			}			
+			}	
+			outTab[0] = 0;
 		return outTab;
 	}
 	
