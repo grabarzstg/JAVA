@@ -95,32 +95,23 @@ public class menu {
 		double[] outTab = new double[101];
 		double[] tabX = new double[101];
 		Init node = initList.get(0);
+		
 		outTab[0] = tempArray[0][0];
 		tabX[1]=1;
 		tabX[0]=node.getX(); 
+		
 		for(int i=1; i<initList.size()*2; i++)
 		{
-		double[] tabN = new double[101];	
-		double[] tabB = new double[101];
-		node = initList.get((i-1)/2);
+			double[] tabT = new double[101];	
+			double[] tabB = new double[101];
+			node = initList.get((i-1)/2);
 
-		System.out.print(node.getX());
-		System.out.print("<<X<<");
-		System.out.print(tempArray[i][0]);
-		System.out.println("<<B<<");
+			tabT = polynomialNum(tabX,node.getX());		
+			tabB = polynomialB(polynomialSum(tabT, tabX), tempArray[i][0]);
+			outTab = polynomialSum(outTab, tabB);
+			tabX = polynomialX(tabX);
 		
-		tabN = polynomialNum(tabX,node.getX());
-		
-		tabB = polynomialB(polynomialSum(tabN, tabX), tempArray[i][0]);
-		outTab = polynomialSum(outTab, tabB);
-		tabX = polynomialX(tabX);
-		
-		
-		for(int a=0; a<10; a++){
-			System.out.println(tabX[a]);
-		}
 
-		
 		}
 
 	}
@@ -136,11 +127,11 @@ public class menu {
 		return outTab;
 	}
 	
-	static double[] polynomialNum(double initTab[], double num)
+	static double[] polynomialNum(double initTab[], double t)
 	{
 			for (int i=0; i<100; i++)
 			{
-				initTab[i]= initTab[i]*(num*(-1));			
+				initTab[i]= initTab[i]*(t*(-1));			
 			}			
 		return initTab;
 	}
