@@ -43,16 +43,24 @@ public class menu {
 	{
 		for(int i=0; i<amount; i++)
 		{
-			initList.add(getInputData());
+			Init node =getInputData();
+			if(checkExistingX(node.getX())==true){
+				throw new InputMismatchException();
+			}
+			else
+			{
+			initList.add(node);
+			}
 		}
 	}
 	
 	
 	static double getArgument(String name)
 	{
-		
 		System.out.print("Podaj wartoœæ "+name+" :");
+		
 		return in.nextDouble();
+
 	}
 
 	
@@ -96,24 +104,57 @@ public class menu {
 		double[] tabX = new double[101];
 		Init node = initList.get(0);
 		
-		outTab[0] = tempArray[0][0];
-		tabX[1]=1;
-		tabX[0]=node.getX(); 
+		outTab[0] = tempArray[0][0];  // b0
 		
-		for(int i=1; i<initList.size()*2; i++)
+		tabX[1]=1;						//b1
+		tabX[0]=node.getX(); 
+		outTab = polynomialSum(outTab, tabX);
+		
+		for(int i=2; i<initList.size()*2; i++)
 		{
 			double[] tabT = new double[101];	
 			double[] tabB = new double[101];
+			double[] pom = new double[101];
 			node = initList.get((i-1)/2);
 
-			tabT = polynomialNum(tabX,node.getX());		
-			tabB = polynomialB(polynomialSum(tabT, tabX), tempArray[i][0]);
-			outTab = polynomialSum(outTab, tabB);
-			tabX = polynomialX(tabX);
+			System.out.print(node.getX());
+			System.out.print("<<X<<");
+			System.out.print(tempArray[i][0]);
+			System.out.println("<<B<<");
 		
-
+			tabT = polynomialNum(tabX,node.getX());		
+			tabX = polynomialX(tabX);
+			pom = polynomialInvert(polynomialSum(tabT, tabX), i);
+			tabB = polynomialB(pom, tempArray[i][0]);
+			outTab = polynomialSum(outTab, tabB);
+			
+			
+			for(int a=0; a<10; a++){System.out.println(outTab[a]);}
+			
+			 // +
+		
+			
 		}
 
+	}
+	
+	static double[] polynomialInvert(double initTab[], int mod)
+	{
+		double[] outTab = new double[101];
+		
+			for (int i=0; i<100; i=i+2)
+			{
+				if(mod%2 == 0){
+					outTab[i] = initTab[i];
+					outTab[i+1] = (initTab[i+1])*-1;
+				}
+				else
+				{
+					outTab[i] = (initTab[i])*-1;
+					outTab[i+1] = initTab[i+1];	
+				}
+			}	
+		return outTab;
 	}
 	
 	static double[] polynomialX(double initTab[])
@@ -123,37 +164,85 @@ public class menu {
 			{
 				outTab[i+1] = initTab[i];			
 			}	
-			outTab[0] = 0;
+			
 		return outTab;
 	}
 	
 	static double[] polynomialNum(double initTab[], double t)
 	{
+		double[] outTab = new double[101];
 			for (int i=0; i<100; i++)
 			{
-				initTab[i]= initTab[i]*(t*(-1));			
+				outTab[i]= (initTab[i]*t);		
 			}			
-		return initTab;
+		return outTab;
 	}
 	
 	static double[] polynomialB(double initTab[], double b)
 	{
+		double[] outTab = new double[101];
 			for (int i=0; i<100; i++)
 			{
-				initTab[i]= initTab[i]*b;			
+				outTab[i]= initTab[i]*b;			
 			}			
-		return initTab;
+			return outTab;
 	}
 	
 	static double[] polynomialSum(double tabA[], double tabB[])
 	{
+		double[] outTab = new double[101];
 			for (int i=0; i<100; i++)
 			{
-				tabA[i]= tabA[i]+tabB[i];			
+				outTab[i]= (tabA[i])+(tabB[i]);			
 			}			
-		return tabA;
+		return outTab;
 	}
 	
+	static void product()
+	{
+		String operation = new String();
+		operation+=tempArray[0][0];
+		for (int i=1; i<initList.size()*2; i++)
+		{
+			if(tempArray[i][0] > 0)
+			{
+				operation+=" + "+tempArray[i][0];
+				operation+="*"+str(i);
+			}
+			
+		}
+		System.out.println(operation);
+	}
+	
+	static String str (int a)
+	{
+		Init node = initList.get((a-1)/2);
+		String temp= new String();
+		if(a>1){
+		temp+=str(a-1)+"(x-"+node.getX()+")";
+		}
+		else
+		{
+			temp+="(x-"+node.getX()+")";
+		}
+		
+	return temp;
+	}
+	
+	
+	static boolean checkExistingX(double x)
+	{
+		for (int i=0; i<initList.size(); i++)
+		{
+			Init node = initList.get(i);
+			if(node.getX()==x)
+			{
+				return true;
+			}			
+		}	
+		
+		return false;
+	}
 
 	
 	//MAIN
@@ -163,9 +252,10 @@ public class menu {
 		setTParameters();
 		run();
 		System.out.println("------");
-		polynomial();
+		product();
+		//polynomial();
 		System.out.println("------");
-		printTempArray();
+		//printTempArray();
 		//printPowerList();
 	}
 
