@@ -98,105 +98,75 @@ public class menu {
 		}
 	}
 	
-	static void polynomial()
-	{	 
-		double[] outTab = new double[101];
-		double[] tabX = new double[101];
-		Init node = initList.get(0);
+	static void Taylor()
+	{
+		System.out.print("Ile wêz³ów chcesz wczytaæ?");
+		int howMany = in.nextInt();
 		
-		outTab[0] = tempArray[0][0];  // b0
+		double[] polyTab = new double[howMany+1];
 		
-		tabX[1]=1;						//b1
-		tabX[0]=node.getX(); 
-		outTab = polynomialSum(outTab, tabX);
+		System.out.print("Podaj punkt obrad:");
+		double point = in.nextDouble();
 		
-		for(int i=2; i<initList.size()*2; i++)
+		for (int i=(howMany) ;i>=0;i--)
 		{
-			double[] tabT = new double[101];	
-			double[] tabB = new double[101];
-			double[] pom = new double[101];
-			node = initList.get((i-1)/2);
-
-			System.out.print(node.getX());
-			System.out.print("<<X<<");
-			System.out.print(tempArray[i][0]);
-			System.out.println("<<B<<");
-		
-			tabT = polynomialNum(tabX,node.getX());		
-			tabX = polynomialX(tabX);
-			pom = polynomialInvert(polynomialSum(tabT, tabX), i);
-			tabB = polynomialB(pom, tempArray[i][0]);
-			outTab = polynomialSum(outTab, tabB);
-			
-			
-			for(int a=0; a<10; a++){System.out.println(outTab[a]);}
-			
-			 // +
-		
-			
+			System.out.print("Podaj a *x^"+i+": ");
+			polyTab[i] = in.nextDouble();
 		}
-
-	}
-	
-	static double[] polynomialInvert(double initTab[], int mod)
-	{
-		double[] outTab = new double[101];
 		
-			for (int i=0; i<100; i=i+2)
-			{
-				if(mod%2 == 0){
-					outTab[i] = initTab[i];
-					outTab[i+1] = (initTab[i+1])*-1;
-				}
-				else
-				{
-					outTab[i] = (initTab[i])*-1;
-					outTab[i+1] = initTab[i+1];	
-				}
-			}	
-		return outTab;
-	}
-	
-	static double[] polynomialX(double initTab[])
-	{
-		double[] outTab = new double[101];
-			for (int i=0; i<100; i++)
-			{
-				outTab[i+1] = initTab[i];			
-			}	
+		
+		double[] tempTab = new double[howMany+1];
+		/*
+		for(int i=0,j=howMany; i<=howMany ;i++,j--)
+		{			
 			
-		return outTab;
+			System.out.print(tempTab[i]+"x^"+i+" + ");
+			if (i!=0)
+			{
+			tempTab[i-1] = polyTab[i]*polyTab[i-1];
+			
+			tempTab[j]=polyTab[j]*(howMany-i);
+			//System.out.println("temp = " + tempTab[i] + " poly = " + polyTab[i] + "howmany -i = " + (howMany-1) );
+		}*/
+		
+		for(int k=0;k<howMany;k++){
+		//poczatek petli liczacej pochodne
+		tempTab=pochodna(polyTab,howMany);
+		// i-ta pochodna =
+		
+		System.out.println((k+1) + " pochodna wynosi: ");
+		for(int i=tempTab.length-1;i>0;i--){
+			System.out.print(tempTab[i]+"x^"+(i-1));
+			if(i>1){
+				System.out.print(" + ");
+			}
+		}
+		System.out.println("----------");
+
+		polyTab=tempTab;
+		}
+		//kuniec pyntli
+			
 	}
 	
-	static double[] polynomialNum(double initTab[], double t)
-	{
-		double[] outTab = new double[101];
-			for (int i=0; i<100; i++)
-			{
-				outTab[i]= (initTab[i]*t);		
-			}			
-		return outTab;
+	static double[] pochodna(double tab[],int howMany){
+		double[] tab1 = new double[howMany+1];
+		
+		for(int i=0,j=howMany; i<=howMany ;i++,j--)
+		{			
+			tab1[j]=tab[j]*(howMany-i);
+			//System.out.println("temp = " + tab1[i] + " poly = " + tab[i] + "howmany -i = " + (howMany-1) );
+		}
+		
+		return tab1;
 	}
+		
 	
-	static double[] polynomialB(double initTab[], double b)
-	{
-		double[] outTab = new double[101];
-			for (int i=0; i<100; i++)
-			{
-				outTab[i]= initTab[i]*b;			
-			}			
-			return outTab;
-	}
+		
 	
-	static double[] polynomialSum(double tabA[], double tabB[])
-	{
-		double[] outTab = new double[101];
-			for (int i=0; i<100; i++)
-			{
-				outTab[i]= (tabA[i])+(tabB[i]);			
-			}			
-		return outTab;
-	}
+	
+	
+
 	
 	static void product()
 	{
@@ -247,6 +217,7 @@ public class menu {
 	
 	//MAIN
 	public static  void main(String[] args) {
+		
 		getNodeAmount();
 		printInitList();
 		setTParameters();
@@ -255,8 +226,9 @@ public class menu {
 		product();
 		//polynomial();
 		System.out.println("------");
+		Taylor();
 		//printTempArray();
-		//printPowerList();
+		//printPowerList(); 
 	}
 
 	//TESTS
