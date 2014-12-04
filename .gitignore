@@ -3,18 +3,15 @@
 #################
 
 *.pydevproject
-.project
+
 .metadata
 .recommenders
-bin/
 tmp/
 *.tmp
 *.bak
 *.swp
 *~.nib
 local.properties
-.classpath
-.settings/
 .loadpath
 
 # External tool builders
