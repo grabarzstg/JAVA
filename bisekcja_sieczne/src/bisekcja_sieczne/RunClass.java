@@ -15,9 +15,10 @@ import java.util.Scanner;
 
 public class RunClass {
 
-	static double epsilon, a, b, x0, fa, fb, f0, bOut, sOut;	
-	static int bisectionSteps, slashingSteps;
+	static double epsilon, a, b, x0, x1, x2, fa, fb, f0, bOut, sOut;	
+	static int bisectionSteps, slashingSteps, i;
 	private static Scanner in = new Scanner(System.in);
+	
 	static void getEpsilon ()
 	{
 		try {
@@ -47,8 +48,10 @@ public class RunClass {
 	{
 		System.out.println("Podaj zakres poszukiwań pierwiastka: \n Podaj a:");
 		a= in.nextDouble();
+		x1 = a;
 		System.out.println("Podaj b:");
 		b= in.nextDouble();
+		x2 = b;
 		setFunc(a, b);
 	}
 	
@@ -56,7 +59,6 @@ public class RunClass {
 	{
 		fa = f(x1); 
 		fb = f(x2);
-		
 	}
 	
 	static void checkBisection ()
@@ -89,24 +91,14 @@ public class RunClass {
 		bOut = x0;	
 	}
 	
-	static double x1, x2;
-	static int i;
 	
-	
-	static void getX()
-	{   
-		System.out.println("Podaj dwa wstepne punkty x1 i x2: \n Podaj x1:");
-		x1 = in.nextDouble();
-		System.out.println("Podaj x2:");
-		x2 = in.nextDouble();
+	static void slashing()
+	{
 		x0 = 0;
 		f0 = 0;
 		i = 64;
 		setFunc(x1, x2);
-	}
-	
-	static void slashing()
-	{
+		
 		while ( (i > 0) && (Math.abs(x1 - x2) > epsilon) ){
 			slashingSteps++;
 			if (Math.abs(fa - fb) < epsilon){
@@ -122,7 +114,7 @@ public class RunClass {
 			x2 = x1; fb = fa;
 			x1 = x0; fa = f0;
 			i--;
-			if (i == 0){
+			if (i <= 0){
 				System.err.println("Błąd: Przekroczony limit obiegów.");
 			}
 		}
@@ -132,16 +124,17 @@ public class RunClass {
 	}
 	
 	static void compare(){
-		System.out.println("[BISEKCJA] x0 = "+ bOut);
-		System.out.println("[SIECZNE] x0 = "+ sOut);
-		System.out.println("[BISEKCJA] ilość kroków: " + bisectionSteps);
-		System.out.println("[SIECZNE] ilośc kroków: "+ slashingSteps);
+		if (bisectionSteps != 0 && slashingSteps != 0){
+			System.out.println("[BISEKCJA] x0 = "+ bOut);
+			System.out.println("[SIECZNE ] x0 = "+ sOut);
+			System.out.println("[BISEKCJA] ilość kroków: " + bisectionSteps);
+			System.out.println("[SIECZNE ] ilośc kroków: "+ slashingSteps);    
+		}
 	}
 	
 	public static void main(String[] args) {
 		getEpsilon();
 		checkBisection();
-		getX();
 		slashing();
 		compare();
 	}
