@@ -15,16 +15,19 @@ import java.util.Scanner;
 
 public class RunClass {
 
-	static double epsilon, a, b, x0, fa, fb, f0;	
-	static int bisectionSteps = 0;
+	static double epsilon, a, b, x0, fa, fb, f0, bOut, sOut;	
+	static int bisectionSteps, slashingSteps;
 	private static Scanner in = new Scanner(System.in);
 	static void getEpsilon ()
 	{
 		try {
 		System.out.println("Podaj ε: (liczba z przedziału {0..1})");
 		epsilon = in.nextDouble();
+		if (epsilon > 1 || epsilon < 0 ){
+			throw new InputMismatchException();
+			}
 		
-		getAB();
+		getRange();
 		}
 		catch (InputMismatchException e){
 			System.err.println("Podano nieprawidłową liczbę.");
@@ -40,26 +43,26 @@ public class RunClass {
 	  return x * x * x * x * x + x + 7;
 	}
 	
-	static void getAB()
+	static void getRange()
 	{
 		System.out.println("Podaj zakres poszukiwań pierwiastka: \n Podaj a:");
 		a= in.nextDouble();
 		System.out.println("Podaj b:");
 		b= in.nextDouble();
-		setFunc();
+		setFunc(a, b);
 	}
 	
-	static void setFunc ()
+	static void setFunc (double x1, double x2)
 	{
-		fa = f(a); 
-		fb = f(b);
-		checkBisection();
+		fa = f(x1); 
+		fb = f(x2);
+		
 	}
 	
 	static void checkBisection ()
 	{
 		if ((fa * fb) > 0){
-			System.err.println("Funkcja nie spełnia założeń!");
+			System.err.println("Funkcja nie spełnia założeń bisekcji!");
 		}
 		else{
 			bisection();
@@ -83,17 +86,64 @@ public class RunClass {
 		      		fa = f0;
 		      	}    	        
 		}
-		System.out.println("x0 = " + x0);
+		bOut = x0;	
 	}
 	
+	static double x1, x2;
+	static int i;
+	
+	
+	static void getX()
+	{   
+		System.out.println("Podaj dwa wstepne punkty x1 i x2: \n Podaj x1:");
+		x1 = in.nextDouble();
+		System.out.println("Podaj x2:");
+		x2 = in.nextDouble();
+		x0 = 0;
+		f0 = 0;
+		i = 64;
+		setFunc(x1, x2);
+	}
+	
+	static void slashing()
+	{
+		while ( (i > 0) && (Math.abs(x1 - x2) > epsilon) ){
+			slashingSteps++;
+			if (Math.abs(fa - fb) < epsilon){
+				System.err.println("Złe punkty startowe");
+				i = 0;
+				break;
+			}
+			x0 = x1 - fa * (x1 - x2) / (fa - fb);
+			f0 = f(x0);
+			
+			if (Math.abs(f0) < epsilon) {break; }
+			
+			x2 = x1; fb = fa;
+			x1 = x0; fa = f0;
+			i--;
+			if (i == 0){
+				System.err.println("Błąd: Przekroczony limit obiegów.");
+			}
+		}
+		if (i > 0){
+			sOut = x0;
+		}
+	}
+	
+	static void compare(){
+		System.out.println("[BISEKCJA] x0 = "+ bOut);
+		System.out.println("[SIECZNE] x0 = "+ sOut);
+		System.out.println("[BISEKCJA] ilość kroków: " + bisectionSteps);
+		System.out.println("[SIECZNE] ilośc kroków: "+ slashingSteps);
+	}
 	
 	public static void main(String[] args) {
 		getEpsilon();
-
-
-
-		
-
+		checkBisection();
+		getX();
+		slashing();
+		compare();
 	}
 
 }
