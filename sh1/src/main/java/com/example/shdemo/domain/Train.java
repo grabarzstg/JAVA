@@ -9,13 +9,13 @@ import javax.persistence.NamedQuery;
 
 @Entity
 @NamedQueries({
-		@NamedQuery(name = "car.unsold", query = "Select c from Car c where c.sold = false")
+		@NamedQuery(name = "train.unsold", query = "Select c from Train c where c.sold = false")
 })
-public class Car {
+public class Train {
 
 	private Long id;
-	private String make;
-	private String model;
+	private String name;
+	private String year;
 	private Boolean sold = false;
 
 	@Id
@@ -28,20 +28,20 @@ public class Car {
 		this.id = id;
 	}
 
-	public String getMake() {
-		return make;
+	public String getName() {
+		return name;
 	}
 
-	public void setMake(String make) {
-		this.make = make;
+	public void setName(String make) {
+		this.name = make;
 	}
 
-	public String getModel() {
-		return model;
+	public String getYear() {
+		return year;
 	}
 
-	public void setModel(String model) {
-		this.model = model;
+	public void setYear(String model) {
+		this.year = model;
 	}
 
 	public Boolean getSold() {

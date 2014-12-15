@@ -2,22 +2,22 @@ package com.example.shdemo.service;
 
 import java.util.List;
 
-import com.example.shdemo.domain.Car;
-import com.example.shdemo.domain.Person;
+import com.example.shdemo.domain.Train;
+import com.example.shdemo.domain.Station;
 
 public interface SellingManager {
 	
-	void addClient(Person person);
-	List<Person> getAllClients();
-	void deleteClient(Person person);
-	Person findClientByPin(String pin);
+	void addClient(Station person);
+	List<Station> getAllClients();
+	void deleteClient(Station person);
+	Station findClientByPin(String pin);
 	
-	Long addNewCar(Car car);
-	List<Car> getAvailableCars();
-	void disposeCar(Person person, Car car);
-	Car findCarById(Long id);
+	Long addNewCar(Train car);
+	List<Train> getAvailableCars();
+	void disposeCar(Station person, Train car);
+	Train findCarById(Long id);
 
-	List<Car> getOwnedCars(Person person);
+	List<Train> getOwnedCars(Station person);
 	void sellCar(Long personId, Long carId);
 
 }

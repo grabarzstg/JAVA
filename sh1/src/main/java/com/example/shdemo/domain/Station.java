@@ -19,18 +19,18 @@ import javax.persistence.TemporalType;
 
 @Entity
 @NamedQueries({ 
-	@NamedQuery(name = "person.all", query = "Select p from Person p"),
-	@NamedQuery(name = "person.byPin", query = "Select p from Person p where p.pin = :pin")
+	@NamedQuery(name = "station.all", query = "Select p from Station p"),
+	@NamedQuery(name = "station.byCity", query = "Select p from Station p where p.city = :city")
 })
-public class Person {
+public class Station {
 
 	private Long id;
 
-	private String firstName = "unknown";
-	private String pin = "";
-	private Date registrationDate = new Date();
+	private String Name = "unknown";
+	private String city = "";
+	private Date buildDate = new Date();
 
-	private List<Car> cars = new ArrayList<Car>();
+	private List<Train> cars = new ArrayList<Train>();
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -41,35 +41,35 @@ public class Person {
 		this.id = id;
 	}
 	
-	public String getFirstName() {
-		return firstName;
+	public String getName() {
+		return Name;
 	}
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+	public void setName(String firstName) {
+		this.Name = firstName;
 	}
 
 	@Column(unique = true, nullable = false)
-	public String getPin() {
-		return pin;
+	public String getCity() {
+		return city;
 	}
-	public void setPin(String pin) {
-		this.pin = pin;
+	public void setCity(String city) {
+		this.city = city;
 	}
 
 	@Temporal(TemporalType.DATE)
-	public Date getRegistrationDate() {
-		return registrationDate;
+	public Date getBuildDate() {
+		return buildDate;
 	}
-	public void setRegistrationDate(Date registrationDate) {
-		this.registrationDate = registrationDate;
+	public void setBuildDate(Date buildDate) {
+		this.buildDate = buildDate;
 	}
 
 	// Be careful here, both with lazy and eager fetch type
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	public List<Car> getCars() {
+	public List<Train> getCars() {
 		return cars;
 	}
-	public void setCars(List<Car> cars) {
+	public void setCars(List<Train> cars) {
 		this.cars = cars;
 	}
 }

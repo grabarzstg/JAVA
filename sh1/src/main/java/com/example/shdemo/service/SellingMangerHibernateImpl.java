@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.shdemo.domain.Car;
-import com.example.shdemo.domain.Person;
+import com.example.shdemo.domain.Train;
+import com.example.shdemo.domain.Station;
 
 @Component
 @Transactional
@@ -27,18 +27,18 @@ public class SellingMangerHibernateImpl implements SellingManager {
 	}
 	
 	@Override
-	public void addClient(Person person) {
+	public void addClient(Station person) {
 		person.setId(null);
 		sessionFactory.getCurrentSession().persist(person);
 	}
 	
 	@Override
-	public void deleteClient(Person person) {
-		person = (Person) sessionFactory.getCurrentSession().get(Person.class,
+	public void deleteClient(Station person) {
+		person = (Station) sessionFactory.getCurrentSession().get(Station.class,
 				person.getId());
 		
 		// lazy loading here
-		for (Car car : person.getCars()) {
+		for (Train car : person.getCars()) {
 			car.setSold(false);
 			sessionFactory.getCurrentSession().update(car);
 		}
@@ -46,60 +46,60 @@ public class SellingMangerHibernateImpl implements SellingManager {
 	}
 
 	@Override
-	public List<Car> getOwnedCars(Person person) {
-		person = (Person) sessionFactory.getCurrentSession().get(Person.class,
+	public List<Train> getOwnedCars(Station person) {
+		person = (Station) sessionFactory.getCurrentSession().get(Station.class,
 				person.getId());
 		// lazy loading here - try this code without (shallow) copying
-		List<Car> cars = new ArrayList<Car>(person.getCars());
+		List<Train> cars = new ArrayList<Train>(person.getCars());
 		return cars;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Person> getAllClients() {
-		return sessionFactory.getCurrentSession().getNamedQuery("person.all")
+	public List<Station> getAllClients() {
+		return sessionFactory.getCurrentSession().getNamedQuery("station.all")
 				.list();
 	}
 
 	@Override
-	public Person findClientByPin(String pin) {
-		return (Person) sessionFactory.getCurrentSession().getNamedQuery("person.byPin").setString("pin", pin).uniqueResult();
+	public Station findClientByPin(String pin) {
+		return (Station) sessionFactory.getCurrentSession().getNamedQuery("station.byCity").setString("city", pin).uniqueResult();
 	}
 
 
 	@Override
-	public Long addNewCar(Car car) {
+	public Long addNewCar(Train car) {
 		car.setId(null);
 		return (Long) sessionFactory.getCurrentSession().save(car);
 	}
 
 	@Override
 	public void sellCar(Long personId, Long carId) {
-		Person person = (Person) sessionFactory.getCurrentSession().get(
-				Person.class, personId);
-		Car car = (Car) sessionFactory.getCurrentSession()
-				.get(Car.class, carId);
+		Station person = (Station) sessionFactory.getCurrentSession().get(
+				Station.class, personId);
+		Train car = (Train) sessionFactory.getCurrentSession()
+				.get(Train.class, carId);
 		car.setSold(true);
 		person.getCars().add(car);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Car> getAvailableCars() {
-		return sessionFactory.getCurrentSession().getNamedQuery("car.unsold")
+	public List<Train> getAvailableCars() {
+		return sessionFactory.getCurrentSession().getNamedQuery("train.unsold")
 				.list();
 	}
 	@Override
-	public void disposeCar(Person person, Car car) {
+	public void disposeCar(Station person, Train car) {
 
-		person = (Person) sessionFactory.getCurrentSession().get(Person.class,
+		person = (Station) sessionFactory.getCurrentSession().get(Station.class,
 				person.getId());
-		car = (Car) sessionFactory.getCurrentSession().get(Car.class,
+		car = (Train) sessionFactory.getCurrentSession().get(Train.class,
 				car.getId());
 
-		Car toRemove = null;
+		Train toRemove = null;
 		// lazy loading here (person.getCars)
-		for (Car aCar : person.getCars())
+		for (Train aCar : person.getCars())
 			if (aCar.getId().compareTo(car.getId()) == 0) {
 				toRemove = aCar;
 				break;
@@ -112,8 +112,8 @@ public class SellingMangerHibernateImpl implements SellingManager {
 	}
 
 	@Override
-	public Car findCarById(Long id) {
-		return (Car) sessionFactory.getCurrentSession().get(Car.class, id);
+	public Train findCarById(Long id) {
+		return (Train) sessionFactory.getCurrentSession().get(Train.class, id);
 	}
 
 }
