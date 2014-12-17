@@ -35,9 +35,8 @@ public class SellingManagerTest {
 
 	private final String T_NAME_2 = "Pendolino";
 	private final String YEAR_2 = "2014";
-
-
-
+	
+	
 	@Test
 	public void createTrainCheck() {
 
@@ -222,7 +221,7 @@ public class SellingManagerTest {
 	public void deleteStationCheck() {
 		
 		List<Station> retrievedStations = sellingManager.getAllStations();
-		
+		int initData = retrievedStations.size();
 		// If there is a station with CITY_1 or CITY_2 delete it
 		for (Station station : retrievedStations) {
 			if (station.getCity().equals(CITY_1)) {
@@ -248,17 +247,17 @@ public class SellingManagerTest {
 		
 		List<Station> allStations = sellingManager.getAllStations();
 		Station deletedStation = sellingManager.findStationByCity(CITY_1);
-		assertEquals(1, allStations.size());
+		assertEquals(initData+1, allStations.size());
 		assertEquals(null, deletedStation);
-		assertEquals(S_NAME_2, allStations.get(0).getName());
-		assertEquals(CITY_2, allStations.get(0).getCity());
+		assertEquals(S_NAME_2, allStations.get(initData).getName());
+		assertEquals(CITY_2, allStations.get(initData).getCity());
 	}
 	
 	@Test
 	public void readAllStationCheck(){
 		
 		List<Station> retrievedStations = sellingManager.getAllStations();
-		
+		int initData = retrievedStations.size();
 		// If there is a station with CITY_1 or CITY_2 delete it
 		for (Station station : retrievedStations) {
 			if (station.getCity().equals(CITY_1)) {
@@ -281,7 +280,7 @@ public class SellingManagerTest {
 		sellingManager.addStation(station2);
 		
 		List<Station> allStations = sellingManager.getAllStations();
-		assertEquals(2, allStations.size());
+		assertEquals(initData+2, allStations.size());
 	}
 	
 	@Test
@@ -306,7 +305,7 @@ public class SellingManagerTest {
 	@Test
 	public void deleteStationByIdCheck(){
 		List<Station> retrievedStations = sellingManager.getAllStations();
-		
+		int initData = retrievedStations.size();
 		// If there is a station with CITY_1 or CITY_2 delete it
 		for (Station station : retrievedStations) {
 			if (station.getCity().equals(CITY_1)) {
@@ -331,9 +330,9 @@ public class SellingManagerTest {
 		sellingManager.deleteStationById(stationId);
 		
 		List<Station> allStations = sellingManager.getAllStations();
-		assertEquals(1, allStations.size());
-		assertEquals(S_NAME_2, allStations.get(0).getName());
-		assertEquals(CITY_2, allStations.get(0).getCity());
+		assertEquals(initData+1, allStations.size());
+		assertEquals(S_NAME_2, allStations.get(initData).getName());
+		assertEquals(CITY_2, allStations.get(initData).getCity());
 		
 		Station retrievedStation = sellingManager.findStationById(stationId);
 		assertEquals(null, retrievedStation);		
@@ -362,8 +361,6 @@ public class SellingManagerTest {
 		
 		Station anotherRetrievedStation = sellingManager.findStationById(anotherstationId);
 		assertEquals(anotherStation.getName(), anotherRetrievedStation.getName());
-		assertEquals(anotherStation.getCity(), anotherRetrievedStation.getCity());
-		
-		
+		assertEquals(anotherStation.getCity(), anotherRetrievedStation.getCity());	
 	}
 }
