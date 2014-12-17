@@ -24,91 +24,346 @@ public class SellingManagerTest {
 	@Autowired
 	SellingManager sellingManager;
 
-	private final String NAME_1 = "Bolek";
-	private final String PIN_1 = "1234";
+	private final String S_NAME_1 = "Dworzec Glowny";
+	private final String CITY_1 = "Gdańsk";
 
-	private final String NAME_2 = "Lolek";
-	private final String PIN_2 = "4321";
+	private final String S_NAME_2 = "Stacja PKP";
+	private final String CITY_2 = "Starogard Gd.";
 
-	private final String MODEL_1 = "126p";
-	private final String MAKE_1 = "Fiat";
+	private final String T_NAME_1 = "126p";
+	private final String YEAR_1 = "1999";
 
-	private final String MODEL_2 = "Mondeo";
-	private final String MAKE_2 = "Ford";
+	private final String T_NAME_2 = "Pendolino";
+	private final String YEAR_2 = "2014";
+
+
 
 	@Test
-	public void addClientCheck() {
+	public void createTrainCheck() {
 
-		List<Station> retrievedClients = sellingManager.getAllClients();
+		Train train = new Train();
+		train.setName(YEAR_1);
+		train.setYear(T_NAME_1);
+		// ... other properties here
 
-		// If there is a client with PIN_1 delete it
-		for (Station client : retrievedClients) {
-			if (client.getCity().equals(PIN_1)) {
-				sellingManager.deleteClient(client);
+		Long trainId = sellingManager.addNewTrain(train);
+
+		Train retrievedTrain = sellingManager.findTrainById(trainId);
+		assertEquals(YEAR_1, retrievedTrain.getName());
+		assertEquals(T_NAME_1, retrievedTrain.getYear());
+		// ... check other properties here
+
+	}
+
+	@Test
+	public void sellTrainCheck() {
+
+		Station station = new Station();
+		station.setName(S_NAME_2);
+		station.setCity(CITY_2);
+
+		sellingManager.addStation(station);
+
+		Station retrievedStation = sellingManager.findStationByCity(CITY_2);
+
+		Train train = new Train();
+		train.setName(YEAR_2);
+		train.setYear(T_NAME_2);
+
+		Long trainId = sellingManager.addNewTrain(train);
+
+		sellingManager.sellTrain(retrievedStation.getId(), trainId);
+
+		List<Train> ownedTrains = sellingManager.getOwnedTrains(retrievedStation);
+
+		assertEquals(1, ownedTrains.size());
+		assertEquals(YEAR_2, ownedTrains.get(0).getName());
+		assertEquals(T_NAME_2, ownedTrains.get(0).getYear());
+	}
+
+	@Test
+	public void disposeTrainCheck() {
+		
+		Station station = new Station();
+		station.setName(S_NAME_2);
+		station.setCity(CITY_2);
+
+		sellingManager.addStation(station);
+
+		Station retrievedStation = sellingManager.findStationByCity(CITY_2);
+
+		Train train = new Train();
+		train.setName(YEAR_2);
+		train.setYear(T_NAME_2);
+		
+		sellingManager.addNewTrain(train);
+		sellingManager.disposeTrain(retrievedStation, train);
+		
+		List<Train> ownedTrains = sellingManager.getOwnedTrains(retrievedStation);
+		assertEquals(0, ownedTrains.size());
+	}
+	
+	@Test
+	public void readAllTrainCheck() {
+		
+		Train train = new Train();
+		train.setName(YEAR_1);
+		train.setYear(T_NAME_1);
+		
+		Train train2 = new Train();
+		train2.setName(YEAR_2);
+		train2.setYear(T_NAME_2);
+		
+		sellingManager.addNewTrain(train);
+		sellingManager.addNewTrain(train2);
+		
+		List<Train> allTrains = sellingManager.getAvailableTrains();
+		assertEquals(2, allTrains.size());
+		
+		assertEquals(YEAR_1, allTrains.get(0).getName());
+		assertEquals(T_NAME_1, allTrains.get(0).getYear());
+		assertEquals(YEAR_2, allTrains.get(1).getName());
+		assertEquals(T_NAME_2, allTrains.get(1).getYear());
+	}
+
+	@Test
+	public void readTrainByIdCheck(){
+		
+		Train train = new Train();
+		train.setName(YEAR_1);
+		train.setYear(T_NAME_1);
+		
+		Long trainId = sellingManager.addNewTrain(train);
+		Train retrievedTrain = sellingManager.findTrainById(trainId);
+		assertEquals(YEAR_1, retrievedTrain.getName());
+		assertEquals(T_NAME_1, retrievedTrain.getYear());
+	}
+
+	@Test
+	public void deleteTrainByIdCheck(){
+				
+		Train train = new Train();
+		train.setName(YEAR_1);
+		train.setYear(T_NAME_1);
+		Long trainId = sellingManager.addNewTrain(train);
+		
+		Train train2 = new Train();
+		train2.setName(YEAR_2);
+		train2.setYear(T_NAME_2);
+		sellingManager.addNewTrain(train2);
+		
+		sellingManager.deleteTrainById(trainId);
+		
+		List<Train> allTrains = sellingManager.getAvailableTrains();
+		assertEquals(1, allTrains.size());
+		assertEquals(YEAR_2, allTrains.get(0).getName());
+		assertEquals(T_NAME_2, allTrains.get(0).getYear());
+		
+		Train retrievedTrain = sellingManager.findTrainById(trainId);
+		assertEquals(null, retrievedTrain);
+	}
+	
+	@Test
+	public void updateTrainByIdCheck(){
+		Train oldtrain = new Train();
+		oldtrain.setName(YEAR_1);
+		oldtrain.setYear(T_NAME_1);
+		Long oldtrainId = sellingManager.addNewTrain(oldtrain);
+		
+		Train newtrain = new Train();
+		newtrain.setName(YEAR_2);
+		newtrain.setYear(T_NAME_2);
+		
+		Train anotherTrain = new Train();
+		anotherTrain.setName(YEAR_2);
+		anotherTrain.setYear(T_NAME_1);
+		Long anotherTrainId = sellingManager.addNewTrain(anotherTrain);
+		
+		sellingManager.updateTrainById(oldtrainId, newtrain);
+		Train retrievedTrain = sellingManager.findTrainById(oldtrainId);
+		assertEquals(newtrain.getName(), retrievedTrain.getName());
+		assertEquals(newtrain.getYear(), retrievedTrain.getYear());
+		
+		Train anotherRetrievedTrain = sellingManager.findTrainById(anotherTrainId);
+		assertEquals(anotherTrain.getName(), anotherRetrievedTrain.getName());
+		assertEquals(anotherTrain.getYear(), anotherRetrievedTrain.getYear());
+		
+		
+	}
+
+	@Test
+	public void createStationCheck() {
+
+		List<Station> retrievedStations = sellingManager.getAllStations();
+
+		// If there is a station with CITY_1 delete it
+		for (Station station : retrievedStations) {
+			if (station.getCity().equals(CITY_1)) {
+				sellingManager.deleteStation(station);
 			}
 		}
 
-		Station person = new Station();
-		person.setName(NAME_1);
-		person.setCity(PIN_1);
+		Station station = new Station();
+		station.setName(S_NAME_1);
+		station.setCity(CITY_1);
 		// ... other properties here
 
-		// Pin is Unique
-		sellingManager.addClient(person);
+		// City is Unique
+		sellingManager.addStation(station);
 
-		Station retrievedClient = sellingManager.findClientByPin(PIN_1);
+		Station retrievedStation = sellingManager.findStationByCity(CITY_1);
 
-		assertEquals(NAME_1, retrievedClient.getName());
-		assertEquals(PIN_1, retrievedClient.getCity());
+		assertEquals(S_NAME_1, retrievedStation.getName());
+		assertEquals(CITY_1, retrievedStation.getCity());
 		// ... check other properties here
+	}
+	
+	@Test
+	public void deleteStationCheck() {
+		
+		List<Station> retrievedStations = sellingManager.getAllStations();
+		
+		// If there is a station with CITY_1 or CITY_2 delete it
+		for (Station station : retrievedStations) {
+			if (station.getCity().equals(CITY_1)) {
+				sellingManager.deleteStation(station);
+			}
+			if (station.getCity().equals(CITY_2)) {
+				sellingManager.deleteStation(station);
+			}
+		}
+		
+		Station station = new Station();
+		station.setName(S_NAME_1);
+		station.setCity(CITY_1);
+		
+		Station station2 = new Station();
+		station2.setName(S_NAME_2);
+		station2.setCity(CITY_2);
+		
+		sellingManager.addStation(station);
+		sellingManager.addStation(station2);
+		
+		sellingManager.deleteStation(station);
+		
+		List<Station> allStations = sellingManager.getAllStations();
+		Station deletedStation = sellingManager.findStationByCity(CITY_1);
+		assertEquals(1, allStations.size());
+		assertEquals(null, deletedStation);
+		assertEquals(S_NAME_2, allStations.get(0).getName());
+		assertEquals(CITY_2, allStations.get(0).getCity());
+	}
+	
+	@Test
+	public void readAllStationCheck(){
+		
+		List<Station> retrievedStations = sellingManager.getAllStations();
+		
+		// If there is a station with CITY_1 or CITY_2 delete it
+		for (Station station : retrievedStations) {
+			if (station.getCity().equals(CITY_1)) {
+				sellingManager.deleteStation(station);
+			}
+			if (station.getCity().equals(CITY_2)) {
+				sellingManager.deleteStation(station);
+			}
+		}
+		
+		Station station = new Station();
+		station.setName(S_NAME_1);
+		station.setCity(CITY_1);
+		
+		Station station2 = new Station();
+		station2.setName(S_NAME_2);
+		station2.setCity(CITY_2);
+		
+		sellingManager.addStation(station);
+		sellingManager.addStation(station2);
+		
+		List<Station> allStations = sellingManager.getAllStations();
+		assertEquals(2, allStations.size());
+	}
+	
+	@Test
+	public void readStationByIdCheck(){
+		List<Station> retrievedStations = sellingManager.getAllStations();
+		
+		// If there is a station with CITY_1 delete it
+		for (Station station : retrievedStations) {
+			if (station.getCity().equals(CITY_1)) {
+				sellingManager.deleteStation(station);
+			}
+		}
+		
+		Station station = new Station();
+		station.setName(S_NAME_1);
+		station.setCity(CITY_1);
+		Long stationId = sellingManager.addStation(station);
+		Station retrievedStation = sellingManager.findStationById(stationId);
+		assertEquals(S_NAME_1, retrievedStation.getName());	
 	}
 
 	@Test
-	public void addCarCheck() {
-
-		Train car = new Train();
-		car.setName(MAKE_1);
-		car.setYear(MODEL_1);
-		// ... other properties here
-
-		Long carId = sellingManager.addNewCar(car);
-
-		Train retrievedCar = sellingManager.findCarById(carId);
-		assertEquals(MAKE_1, retrievedCar.getName());
-		assertEquals(MODEL_1, retrievedCar.getYear());
-		// ... check other properties here
-
+	public void deleteStationByIdCheck(){
+		List<Station> retrievedStations = sellingManager.getAllStations();
+		
+		// If there is a station with CITY_1 or CITY_2 delete it
+		for (Station station : retrievedStations) {
+			if (station.getCity().equals(CITY_1)) {
+				sellingManager.deleteStation(station);
+			}
+			if (station.getCity().equals(CITY_2)) {
+				sellingManager.deleteStation(station);
+			}
+		}
+		
+		Station station = new Station();
+		station.setName(S_NAME_1);
+		station.setCity(CITY_1);
+		
+		Station station2 = new Station();
+		station2.setName(S_NAME_2);
+		station2.setCity(CITY_2);
+		
+		Long stationId = sellingManager.addStation(station);
+		sellingManager.addStation(station2);
+		
+		sellingManager.deleteStationById(stationId);
+		
+		List<Station> allStations = sellingManager.getAllStations();
+		assertEquals(1, allStations.size());
+		assertEquals(S_NAME_2, allStations.get(0).getName());
+		assertEquals(CITY_2, allStations.get(0).getCity());
+		
+		Station retrievedStation = sellingManager.findStationById(stationId);
+		assertEquals(null, retrievedStation);		
 	}
 
 	@Test
-	public void sellCarCheck() {
-
-		Station person = new Station();
-		person.setName(NAME_2);
-		person.setCity(PIN_2);
-
-		sellingManager.addClient(person);
-
-		Station retrievedPerson = sellingManager.findClientByPin(PIN_2);
-
-		Train car = new Train();
-		car.setName(MAKE_2);
-		car.setYear(MODEL_2);
-
-		Long carId = sellingManager.addNewCar(car);
-
-		sellingManager.sellCar(retrievedPerson.getId(), carId);
-
-		List<Train> ownedCars = sellingManager.getOwnedCars(retrievedPerson);
-
-		assertEquals(1, ownedCars.size());
-		assertEquals(MAKE_2, ownedCars.get(0).getName());
-		assertEquals(MODEL_2, ownedCars.get(0).getYear());
+	public void updateStationByIdCheck(){
+		Station oldstation = new Station();
+		oldstation.setName(S_NAME_1);
+		oldstation.setCity(CITY_1);
+		Long oldstationId = sellingManager.addStation(oldstation);
+		
+		Station newstation = new Station();
+		newstation.setName(S_NAME_2);
+		newstation.setCity(CITY_2);
+		sellingManager.updateStationById(oldstationId, newstation);
+		
+		Station anotherStation = new Station();
+		anotherStation.setName(S_NAME_2);
+		anotherStation.setCity(CITY_2);
+		Long anotherstationId = sellingManager.addStation(anotherStation);
+		
+		Station retrievedStation = sellingManager.findStationById(oldstationId);
+		assertEquals(newstation.getName(), retrievedStation.getName());
+		assertEquals(newstation.getCity(), retrievedStation.getCity());
+		
+		Station anotherRetrievedStation = sellingManager.findStationById(anotherstationId);
+		assertEquals(anotherStation.getName(), anotherRetrievedStation.getName());
+		assertEquals(anotherStation.getCity(), anotherRetrievedStation.getCity());
+		
+		
 	}
-
-	// @Test -
-	public void disposeCarCheck() {
-		// Do it yourself
-	}
-
 }

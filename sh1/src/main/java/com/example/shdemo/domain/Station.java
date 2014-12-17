@@ -30,7 +30,7 @@ public class Station {
 	private String city = "";
 	private Date buildDate = new Date();
 
-	private List<Train> cars = new ArrayList<Train>();
+	private List<Train> trains = new ArrayList<Train>();
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -66,10 +66,10 @@ public class Station {
 
 	// Be careful here, both with lazy and eager fetch type
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	public List<Train> getCars() {
-		return cars;
+	public List<Train> getTrains() {
+		return trains;
 	}
-	public void setCars(List<Train> cars) {
-		this.cars = cars;
+	public void setTrains(List<Train> trains) {
+		this.trains = trains;
 	}
 }

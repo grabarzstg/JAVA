@@ -25,7 +25,8 @@ public class RunClass {
 		System.out.println("Podaj ε: (liczba z przedziału {0..1})");
 		epsilon = in.nextDouble();
 		if (epsilon > 1 || epsilon < 0 ){
-			throw new InputMismatchException();
+			System.err.println("ε nalezy do przedziału {0..1} !  ");
+			getEpsilon();
 			}
 		
 		getRange();
@@ -53,6 +54,7 @@ public class RunClass {
 		b= in.nextDouble();
 		x2 = b;
 		setFunc(a, b);
+		checkBisection();
 	}
 	
 	static void setFunc (double x1, double x2)
@@ -65,6 +67,7 @@ public class RunClass {
 	{
 		if ((fa * fb) > 0){
 			System.err.println("Funkcja nie spełnia założeń bisekcji!");
+			getRange();
 		}
 		else{
 			bisection();
@@ -134,7 +137,7 @@ public class RunClass {
 	
 	public static void main(String[] args) {
 		getEpsilon();
-		checkBisection();
+		
 		slashing();
 		compare();
 	}

@@ -27,93 +27,128 @@ public class SellingMangerHibernateImpl implements SellingManager {
 	}
 	
 	@Override
-	public void addClient(Station person) {
-		person.setId(null);
-		sessionFactory.getCurrentSession().persist(person);
+	public Long addStation(Station station) {
+		station.setId(null);
+		sessionFactory.getCurrentSession().persist(station);
+		return (Long) sessionFactory.getCurrentSession().save(station);
 	}
 	
 	@Override
-	public void deleteClient(Station person) {
-		person = (Station) sessionFactory.getCurrentSession().get(Station.class,
-				person.getId());
+	public void deleteStation(Station station) {
+		station = (Station) sessionFactory.getCurrentSession().get(Station.class,
+				station.getId());
 		
 		// lazy loading here
-		for (Train car : person.getCars()) {
-			car.setSold(false);
-			sessionFactory.getCurrentSession().update(car);
+		for (Train train : station.getTrains()) {
+			train.setSold(false);
+			sessionFactory.getCurrentSession().update(train);
 		}
-		sessionFactory.getCurrentSession().delete(person);
+		sessionFactory.getCurrentSession().delete(station);
 	}
 
 	@Override
-	public List<Train> getOwnedCars(Station person) {
-		person = (Station) sessionFactory.getCurrentSession().get(Station.class,
-				person.getId());
+	public void updateStationById(Long id, Station newStation) {
+		Station oldStation = (Station) sessionFactory.getCurrentSession().get(Station.class, id);
+		oldStation.setName(newStation.getName());
+		oldStation.setCity(newStation.getCity());
+		sessionFactory.getCurrentSession().update(oldStation);
+	}
+	
+	@Override
+	public void deleteStationById(Long id) {
+		Station station = (Station) sessionFactory.getCurrentSession().get(Station.class, id);
+		sessionFactory.getCurrentSession().delete(station);
+	}
+	
+	@Override
+	public List<Train> getOwnedTrains(Station station) {
+		station = (Station) sessionFactory.getCurrentSession().get(Station.class,
+				station.getId());
 		// lazy loading here - try this code without (shallow) copying
-		List<Train> cars = new ArrayList<Train>(person.getCars());
-		return cars;
+		List<Train> trains = new ArrayList<Train>(station.getTrains());
+		return trains;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Station> getAllClients() {
+	public List<Station> getAllStations() {
 		return sessionFactory.getCurrentSession().getNamedQuery("station.all")
 				.list();
 	}
 
 	@Override
-	public Station findClientByPin(String pin) {
-		return (Station) sessionFactory.getCurrentSession().getNamedQuery("station.byCity").setString("city", pin).uniqueResult();
+	public Station findStationByCity(String city) {
+		return (Station) sessionFactory.getCurrentSession().getNamedQuery("station.byCity").setString("city", city).uniqueResult();
+	}
+	
+	@Override
+	public Station findStationById(Long id) {
+		//return (Station) sessionFactory.getCurrentSession().getNamedQuery("station.byCity").setLong("id", id).uniqueResult();
+		return (Station) sessionFactory.getCurrentSession().get(Station.class, id);
 	}
 
 
 	@Override
-	public Long addNewCar(Train car) {
-		car.setId(null);
-		return (Long) sessionFactory.getCurrentSession().save(car);
+	public Long addNewTrain(Train train) {
+		train.setId(null);
+		return (Long) sessionFactory.getCurrentSession().save(train);
 	}
 
 	@Override
-	public void sellCar(Long personId, Long carId) {
-		Station person = (Station) sessionFactory.getCurrentSession().get(
-				Station.class, personId);
-		Train car = (Train) sessionFactory.getCurrentSession()
-				.get(Train.class, carId);
-		car.setSold(true);
-		person.getCars().add(car);
+	public void sellTrain(Long stationId, Long trainId) {
+		Station station = (Station) sessionFactory.getCurrentSession().get(
+				Station.class, stationId);
+		Train train = (Train) sessionFactory.getCurrentSession()
+				.get(Train.class, trainId);
+		train.setSold(true);
+		station.getTrains().add(train);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Train> getAvailableCars() {
+	public List<Train> getAvailableTrains() {
 		return sessionFactory.getCurrentSession().getNamedQuery("train.unsold")
 				.list();
 	}
 	@Override
-	public void disposeCar(Station person, Train car) {
+	public void disposeTrain(Station station, Train train) {
 
-		person = (Station) sessionFactory.getCurrentSession().get(Station.class,
-				person.getId());
-		car = (Train) sessionFactory.getCurrentSession().get(Train.class,
-				car.getId());
+		station = (Station) sessionFactory.getCurrentSession().get(Station.class,
+				station.getId());
+		train = (Train) sessionFactory.getCurrentSession().get(Train.class,
+				train.getId());
 
 		Train toRemove = null;
 		// lazy loading here (person.getCars)
-		for (Train aCar : person.getCars())
-			if (aCar.getId().compareTo(car.getId()) == 0) {
-				toRemove = aCar;
+		for (Train aTrain : station.getTrains())
+			if (aTrain.getId().compareTo(train.getId()) == 0) {
+				toRemove = aTrain;
 				break;
 			}
 
 		if (toRemove != null)
-			person.getCars().remove(toRemove);
+			station.getTrains().remove(toRemove);
 
-		car.setSold(false);
+		train.setSold(false);
 	}
 
 	@Override
-	public Train findCarById(Long id) {
+	public Train findTrainById(Long id) {
 		return (Train) sessionFactory.getCurrentSession().get(Train.class, id);
 	}
 
+	@Override
+	public void deleteTrainById(Long id) {
+		Train train = (Train) sessionFactory.getCurrentSession().get(Train.class, id);
+		sessionFactory.getCurrentSession().delete(train);
+	}
+	
+	@Override
+	public void updateTrainById(Long id, Train newTrain) {
+		Train oldTrain = (Train) sessionFactory.getCurrentSession().get(Train.class, id);
+		oldTrain.setName(newTrain.getName());
+		oldTrain.setYear(newTrain.getYear());
+		sessionFactory.getCurrentSession().update(oldTrain);
+	}
+	
 }

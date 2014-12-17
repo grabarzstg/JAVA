@@ -7,17 +7,22 @@ import com.example.shdemo.domain.Station;
 
 public interface SellingManager {
 	
-	void addClient(Station person);
-	List<Station> getAllClients();
-	void deleteClient(Station person);
-	Station findClientByPin(String pin);
+	Long addStation(Station station);
+	List<Station> getAllStations();
+	void deleteStation(Station station);
+	Station findStationByCity(String city);
+	Station findStationById(Long id);
 	
-	Long addNewCar(Train car);
-	List<Train> getAvailableCars();
-	void disposeCar(Station person, Train car);
-	Train findCarById(Long id);
+	Long addNewTrain(Train car);
+	List<Train> getAvailableTrains();
+	void disposeTrain(Station station, Train train);
+	Train findTrainById(Long id);
 
-	List<Train> getOwnedCars(Station person);
-	void sellCar(Long personId, Long carId);
+	List<Train> getOwnedTrains(Station station);
+	void sellTrain(Long stationId, Long trainId);
+	void deleteTrainById(Long id);
+	void deleteStationById(Long id);
+	void updateStationById(Long id, Station newStation);
+	void updateTrainById(Long id, Train newTrain);
 
 }
